@@ -9,6 +9,25 @@ interface DemographicsPageProps {
 	onComplete: () => void;
 }
 
+const COUNTRIES = [
+	"Afghanistan", "Albania", "Algeria", "Argentina", "Australia", "Austria", "Bangladesh",
+	"Belgium", "Brazil", "Canada", "Chile", "China", "Colombia", "Denmark", "Egypt", "Finland",
+	"France", "Germany", "Ghana", "Greece", "India", "Indonesia", "Iran", "Iraq", "Ireland",
+	"Israel", "Italy", "Japan", "Kenya", "Malaysia", "Mexico", "Netherlands", "New Zealand",
+	"Nigeria", "Norway", "Pakistan", "Philippines", "Poland", "Portugal", "Russia", "Saudi Arabia",
+	"Singapore", "South Africa", "South Korea", "Spain", "Sweden", "Switzerland", "Thailand",
+	"Turkey", "Ukraine", "United Kingdom", "United States", "Venezuela", "Vietnam", "Other"
+];
+
+const OCCUPATIONS = [
+	"Accountant", "Administrator", "Architect", "Artist", "Banker", "Business Owner", "Consultant",
+	"Data Scientist", "Designer", "Doctor", "Engineer", "Entrepreneur", "Executive", "Financial Analyst",
+	"Healthcare Worker", "Human Resources", "IT Professional", "Journalist", "Lawyer", "Manager",
+	"Marketing Professional", "Nurse", "Pharmacist", "Pilot", "Professor", "Real Estate Agent",
+	"Researcher", "Sales Representative", "Scientist", "Social Worker", "Software Developer",
+	"Student", "Teacher", "Technician", "Writer", "Unemployed", "Retired", "Other"
+];
+
 export default function DemographicsPage({ demographicData, setDemographicData, onComplete }: DemographicsPageProps) {
 	const [formData, setFormData] = useState<DemographicData>({
 		age: demographicData?.age || "",
@@ -19,14 +38,39 @@ export default function DemographicsPage({ demographicData, setDemographicData, 
 		recruitment_experience: demographicData?.recruitment_experience || false,
 		recruitment_role: demographicData?.recruitment_role || "",
 	});
-	const [isLoading, setIsLoading] = useState(false);
+	const [errors, setErrors] = useState<Record<string, string>>({});
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const validateForm = (): boolean => {
+		const newErrors: Record<string, string> = {};
+
+		if (!formData.age.trim()) {
+			newErrors.age = "Please select your age category";
+		}
+		if (!formData.gender) {
+			newErrors.gender = "Please select your gender";
+		}
+		if (!formData.nationality.trim()) {
+			newErrors.nationality = "Please enter your nationality";
+		}
+		if (!formData.education.trim()) {
+			newErrors.education = "Please select your education level";
+		}
+		if (!formData.occupation.trim()) {
+			newErrors.occupation = "Please enter your occupation";
+		}
+
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
+
+	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		setIsLoading(true);
+		
+		if (!validateForm()) {
+			return;
+		}
+
 		setDemographicData(formData);
-		// Add small delay to ensure state updates
-		await new Promise((resolve) => setTimeout(resolve, 100));
 		onComplete();
 	};
 
@@ -44,12 +88,14 @@ export default function DemographicsPage({ demographicData, setDemographicData, 
 			<form onSubmit={handleSubmit} className='space-y-6'>
 				{/* Age */}
 				<div>
-					<label className='form-label'>Age Category</label>
+					<label className='form-label'>Age Category <span className='text-red-500'>*</span></label>
 					<select
 						value={formData.age}
-						onChange={(e) => handleChange("age", e.target.value)}
-						className='form-input'
-						required>
+						onChange={(e) => {
+							handleChange("age", e.target.value);
+							if (errors.age) setErrors({ ...errors, age: "" });
+						}}
+						className={`form-input ${errors.age ? 'border-red-500 focus:ring-red-500' : ''}`}>
 						<option value=''>Please select your age category</option>
 						<option value='under-25'>Under 25 years</option>
 						<option value='25-34'>25–34 years</option>
@@ -58,11 +104,12 @@ export default function DemographicsPage({ demographicData, setDemographicData, 
 						<option value='55-64'>55–64 years</option>
 						<option value='65-plus'>65 years of age or older</option>
 					</select>
+					{errors.age && <p className='mt-1 text-sm text-red-600'>{errors.age}</p>}
 				</div>
 
 				{/* Gender */}
 				<div>
-					<label className='form-label'>Gender</label>
+					<label className='form-label'>Gender <span className='text-red-500'>*</span></label>
 					<div className='space-y-2'>
 						{[
 							{ value: "female", label: "Female" },
@@ -76,36 +123,49 @@ export default function DemographicsPage({ demographicData, setDemographicData, 
 									name='gender'
 									value={option.value}
 									checked={formData.gender === option.value}
-									onChange={(e) => handleChange("gender", e.target.value)}
+									onChange={(e) => {
+										handleChange("gender", e.target.value);
+										if (errors.gender) setErrors({ ...errors, gender: "" });
+									}}
 									className='w-4 h-4 text-primary-600 border-gray-300 focus:ring-primary-500'
 								/>
 								<span className='text-gray-700'>{option.label}</span>
 							</label>
 						))}
 					</div>
+					{errors.gender && <p className='mt-1 text-sm text-red-600'>{errors.gender}</p>}
 				</div>
 
 				{/* Nationality */}
 				<div>
-					<label className='form-label'>Nationality</label>
-					<input
-						type='text'
+					<label className='form-label'>Nationality <span className='text-red-500'>*</span></label>
+					<select
 						value={formData.nationality}
-						onChange={(e) => handleChange("nationality", e.target.value)}
-						className='form-input'
-						placeholder='Enter your nationality'
-						required
-					/>
+						onChange={(e) => {
+							handleChange("nationality", e.target.value);
+							if (errors.nationality) setErrors({ ...errors, nationality: "" });
+						}}
+						className={`form-input ${errors.nationality ? 'border-red-500 focus:ring-red-500' : ''}`}>
+						<option value=''>Select your nationality</option>
+						{COUNTRIES.map((country) => (
+							<option key={country} value={country.toLowerCase().replace(/\s+/g, '-')}>
+								{country}
+							</option>
+						))}
+					</select>
+					{errors.nationality && <p className='mt-1 text-sm text-red-600'>{errors.nationality}</p>}
 				</div>
 
 				{/* Education */}
 				<div>
-					<label className='form-label'>Level of Education</label>
+					<label className='form-label'>Level of Education <span className='text-red-500'>*</span></label>
 					<select
 						value={formData.education}
-						onChange={(e) => handleChange("education", e.target.value)}
-						className='form-input'
-						required>
+						onChange={(e) => {
+							handleChange("education", e.target.value);
+							if (errors.education) setErrors({ ...errors, education: "" });
+						}}
+						className={`form-input ${errors.education ? 'border-red-500 focus:ring-red-500' : ''}`}>
 						<option value=''>What is your highest completed educational qualification?</option>
 						<option value='secondary-1'>Secondary level I (e.g. Realschule, Sekundarschule)</option>
 						<option value='secondary-2'>
@@ -117,19 +177,27 @@ export default function DemographicsPage({ demographicData, setDemographicData, 
 						<option value='doctorate'>Doctorate / Doctorate</option>
 						<option value='other'>Other degree</option>
 					</select>
+					{errors.education && <p className='mt-1 text-sm text-red-600'>{errors.education}</p>}
 				</div>
 
 				{/* Occupation */}
 				<div>
-					<label className='form-label'>Current Occupation / Activity</label>
-					<input
-						type='text'
+					<label className='form-label'>Current Occupation / Activity <span className='text-red-500'>*</span></label>
+					<select
 						value={formData.occupation}
-						onChange={(e) => handleChange("occupation", e.target.value)}
-						className='form-input'
-						placeholder='Enter your current occupation or activity'
-						required
-					/>
+						onChange={(e) => {
+							handleChange("occupation", e.target.value);
+							if (errors.occupation) setErrors({ ...errors, occupation: "" });
+						}}
+						className={`form-input ${errors.occupation ? 'border-red-500 focus:ring-red-500' : ''}`}>
+						<option value=''>Select your occupation</option>
+						{OCCUPATIONS.map((occupation) => (
+							<option key={occupation} value={occupation.toLowerCase().replace(/\s+/g, '-')}>
+								{occupation}
+							</option>
+						))}
+					</select>
+					{errors.occupation && <p className='mt-1 text-sm text-red-600'>{errors.occupation}</p>}
 				</div>
 
 				{/* Recruitment Experience */}
@@ -182,9 +250,8 @@ export default function DemographicsPage({ demographicData, setDemographicData, 
 				<div className='pt-6'>
 					<button
 						type='submit'
-						disabled={isLoading}
-						className={`btn-primary w-full ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}>
-						{isLoading ? "Saving..." : "Continue to Questionnaires"}
+						className='btn-primary w-full py-3 text-lg font-semibold shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]'>
+						Continue to Questionnaires
 					</button>
 				</div>
 			</form>

@@ -132,28 +132,12 @@ export default function StudyFlow() {
 			setCurrentStep("demographics");
 		} catch (error) {
 			console.error("Error creating participant:", error);
-			alert("An error occurred. Please try again.");
+			alert(error instanceof Error ? error.message : "An error occurred. Please try again.");
 		}
 	};
 
-	const handleDemographicsComplete = async () => {
-		if (!participantId || !demographicData) {
-			console.error("Missing participant ID or demographic data");
-			return;
-		}
-
-		try {
-			// Save scales with demographics
-			await api.saveScales({
-				participant_id: participantId,
-				attari: {},
-				tai: {},
-			});
-			setCurrentStep("attari");
-		} catch (error) {
-			console.error("Error saving demographics:", error);
-			alert("An error occurred. Please try again.");
-		}
+	const handleDemographicsComplete = () => {
+		setCurrentStep("attari");
 	};
 
 	const handleAttariComplete = () => {
@@ -172,7 +156,7 @@ export default function StudyFlow() {
 			setCurrentStep("screening");
 		} catch (error) {
 			console.error("Error saving scales:", error);
-			alert("An error occurred. Please try again.");
+			alert(error instanceof Error ? error.message : "An error occurred. Please try again.");
 		}
 	};
 
@@ -195,7 +179,7 @@ export default function StudyFlow() {
 			setCurrentStep("pre-randomization");
 		} catch (error) {
 			console.error("Error in screening:", error);
-			alert("An error occurred. Please try again.");
+			alert(error instanceof Error ? error.message : "An error occurred. Please try again.");
 		}
 	};
 
@@ -219,7 +203,7 @@ export default function StudyFlow() {
 			setCurrentStep("thank-you");
 		} catch (error) {
 			console.error("Error completing study:", error);
-			alert("An error occurred. Please try again.");
+			alert(error instanceof Error ? error.message : "An error occurred. Please try again.");
 		}
 	};
 

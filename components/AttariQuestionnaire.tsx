@@ -86,13 +86,12 @@ const ATTARI_QUESTIONS = [
 
 export default function AttariQuestionnaire({ attariData, setAttariData, onComplete }: AttariQuestionnaireProps) {
   const [responses, setResponses] = useState<AttariData>(attariData || {})
-  const [isLoading, setIsLoading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
+    setIsSubmitting(true)
     setAttariData(responses)
-    await new Promise((resolve) => setTimeout(resolve, 100))
     onComplete()
   }
 
@@ -160,14 +159,14 @@ export default function AttariQuestionnaire({ attariData, setAttariData, onCompl
         <div className="pt-6">
           <button 
             type="submit" 
-            disabled={!isComplete || isLoading}
+            disabled={!isComplete || isSubmitting}
             className={`w-full py-4 rounded-lg font-medium transition-all duration-200 ${
-              isComplete && !isLoading
+              isComplete && !isSubmitting
                 ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg active:scale-95' 
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
           >
-            {isLoading ? 'Saving...' : 'Continue to TAI Questionnaire'}
+            {isSubmitting ? 'Processing...' : 'Continue to TAI Questionnaire'}
           </button>
         </div>
       </form>

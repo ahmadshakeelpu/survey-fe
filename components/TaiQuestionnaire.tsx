@@ -35,7 +35,6 @@ const TAI_QUESTIONS = {
 export default function TaiQuestionnaire({ taiData, setTaiData, onComplete }: TaiQuestionnaireProps) {
 	const [responses, setResponses] = useState<TaiData>(taiData || {});
 	const [selectedQuestions, setSelectedQuestions] = useState<Array<{ id: string; text: string; category: string }>>([]);
-	const [isLoading, setIsLoading] = useState(false);
 
 	// Randomly select one question from each category
 	useEffect(() => {
@@ -51,12 +50,9 @@ export default function TaiQuestionnaire({ taiData, setTaiData, onComplete }: Ta
 		setSelectedQuestions(selected);
 	}, []);
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		setIsLoading(true);
 		setTaiData(responses);
-		// Add small delay to ensure state updates
-		await new Promise((resolve) => setTimeout(resolve, 100));
 		onComplete();
 	};
 
@@ -69,8 +65,7 @@ export default function TaiQuestionnaire({ taiData, setTaiData, onComplete }: Ta
 	return (
 		<div className='card max-w-3xl mx-auto'>
 			<div className='text-center mb-8'>
-				<h1 className='text-2xl font-bold text-gray-900 mb-2'>Threats of Artificial Intelligence Scale (TAI)</h1>
-				<p className='text-gray-600'>Please rate how threatening you find these AI applications</p>
+				<h1 className='text-2xl font-bold text-gray-900'>Please rate how threatening you find these AI applications</h1>
 			</div>
 
 			<div className='bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6'>
@@ -84,49 +79,48 @@ export default function TaiQuestionnaire({ taiData, setTaiData, onComplete }: Ta
 				</p>
 			</div>
 
-			<form onSubmit={handleSubmit} className='space-y-6'>
-				{selectedQuestions.map((question, index) => (
-					<div key={question.id} className='border border-gray-200 rounded-lg p-4'>
-						<div className='flex justify-between items-start mb-3'>
-							<span className='text-sm font-medium text-gray-500'>Question {index + 1}</span>
-							<span className='text-xs bg-gray-100 px-2 py-1 rounded text-gray-600'>{question.category}</span>
-						</div>
-
-						<p className='text-gray-800 mb-4 font-medium'>{question.text}</p>
-
-						<div className='flex justify-between items-center'>
-							<span className='text-sm text-gray-600'>Non-threatening</span>
-							<div className='flex space-x-4'>
-								{[1, 2, 3, 4, 5].map((value) => (
-									<label key={value} className='flex flex-col items-center cursor-pointer'>
-										<input
-											type='radio'
-											name={question.id}
-											value={value}
-											checked={responses[question.id] === value}
-											onChange={(e) => handleResponseChange(question.id, parseInt(e.target.value))}
-											className='w-4 h-4 text-primary-600 border-gray-300 focus:ring-primary-500'
-										/>
-										<span className='text-sm text-gray-700 mt-1'>{value}</span>
-									</label>
-								))}
-							</div>
-							<span className='text-sm text-gray-600'>Very threatening</span>
-						</div>
+		<form onSubmit={handleSubmit} className='space-y-6'>
+			{selectedQuestions.map((question, index) => (
+				<div key={question.id} className='border border-gray-200 rounded-lg p-4'>
+					<div className='flex justify-between items-start mb-3'>
+						<span className='text-sm font-medium text-gray-500'>Question {index + 1}</span>
 					</div>
-				))}
 
-				<div className='pt-6'>
-					<button
-						type='submit'
-						disabled={!isComplete || isLoading}
-						className={`w-full py-3 rounded-lg font-medium transition-colors duration-200 ${
-							isComplete && !isLoading ? "btn-primary" : "bg-gray-300 text-gray-500 cursor-not-allowed"
-						}`}>
-						{isLoading ? "Saving..." : "Continue to Screening Questions"}
-					</button>
+					<p className='text-gray-800 mb-4 font-medium'>{question.text}</p>
+
+					<div className='flex justify-between items-center'>
+						<span className='text-sm text-gray-600'>Non-threatening</span>
+						<div className='flex space-x-4'>
+							{[1, 2, 3, 4, 5].map((value) => (
+								<label key={value} className='flex flex-col items-center cursor-pointer'>
+									<input
+										type='radio'
+										name={question.id}
+										value={value}
+										checked={responses[question.id] === value}
+										onChange={(e) => handleResponseChange(question.id, parseInt(e.target.value))}
+										className='w-4 h-4 text-primary-600 border-gray-300 focus:ring-primary-500'
+									/>
+									<span className='text-sm text-gray-700 mt-1'>{value}</span>
+								</label>
+							))}
+						</div>
+						<span className='text-sm text-gray-600'>Very threatening</span>
+					</div>
 				</div>
-			</form>
+			))}
+
+			<div className='pt-6'>
+				<button
+					type='submit'
+					disabled={!isComplete}
+					className={`w-full py-3 rounded-lg font-medium transition-colors duration-200 ${
+						isComplete ? "btn-primary" : "bg-gray-300 text-gray-500 cursor-not-allowed"
+					}`}>
+					Continue
+				</button>
+			</div>
+		</form>
 		</div>
 	);
 }

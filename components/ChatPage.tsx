@@ -82,7 +82,7 @@ export default function ChatPage({ participantId, condition, onComplete }: ChatP
 			} catch (error) {
 				console.error("Error fetching greeting:", error);
 				if (isMounted) {
-					alert("An error occurred. Please try again.");
+					alert(error instanceof Error ? error.message : "An error occurred. Please try again.");
 				}
 			} finally {
 				if (isMounted) {
@@ -133,25 +133,17 @@ export default function ChatPage({ participantId, condition, onComplete }: ChatP
 				setCurrentRound((prev) => prev + 1);
 			} else {
 				setIsComplete(true);
-				setTimeout(() => {
-					onComplete();
-				}, 2000);
+				onComplete();
 			}
 		} catch (error) {
 			console.error("Error sending message:", error);
 			// Remove the optimistic message on error
 			setChatHistory((prev) => prev.slice(0, -1));
 			setUserMessage(message); // Restore message in input
-			alert("An error occurred. Please try again.");
+			alert(error instanceof Error ? error.message : "An error occurred. Please try again.");
 		} finally {
 			setIsLoading(false);
 		}
-	};
-
-	const getConditionDescription = () => {
-		return condition === "control"
-			? "You will have a general conversation about career topics"
-			: "You will discuss AI in recruitment based on your concerns";
 	};
 
 	// Remove debug log to prevent console spam
@@ -166,11 +158,6 @@ export default function ChatPage({ participantId, condition, onComplete }: ChatP
 						className='bg-primary-600 h-2 rounded-full transition-all duration-300'
 						style={{ width: `${(currentRound / 3) * 100}%` }}></div>
 				</div>
-			</div>
-
-			<div className='bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6'>
-				<h3 className='font-semibold text-blue-900 mb-2'>Conversation Context:</h3>
-				<p className='text-blue-800 text-sm'>{getConditionDescription()}</p>
 			</div>
 
 			{/* Chat Messages */}
