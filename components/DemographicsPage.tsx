@@ -251,7 +251,7 @@ export default function DemographicsPage({ demographicData, setDemographicData, 
 					<button
 						type='submit'
 						className='btn-primary w-full py-3 text-lg font-semibold shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]'>
-						Continue to Questionnaires
+						Continue
 					</button>
 				</div>
 			</form>

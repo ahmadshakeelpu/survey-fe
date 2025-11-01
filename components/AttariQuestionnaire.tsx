@@ -126,10 +126,10 @@ export default function AttariQuestionnaire({ attariData, setAttariData, onCompl
           <div key={question.id} className="border border-gray-200 rounded-lg p-4">
             <div className="flex justify-between items-start mb-3">
               <span className="text-sm font-medium text-gray-500">Question {index + 1}</span>
-              <div className="text-xs text-gray-500">
+              {/* <div className="text-xs text-gray-500">
                 <span className="bg-gray-100 px-2 py-1 rounded">{question.facet}</span>
                 <span className="ml-2 bg-gray-100 px-2 py-1 rounded">{question.valence}</span>
-              </div>
+              </div> */}
             </div>
             
             <p className="text-gray-800 mb-4 font-medium">{question.text}</p>
@@ -166,7 +166,7 @@ export default function AttariQuestionnaire({ attariData, setAttariData, onCompl
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
           >
-            {isSubmitting ? 'Processing...' : 'Continue to TAI Questionnaire'}
+            {isSubmitting ? 'Processing...' : 'Continue'}
           </button>
         </div>
       </form>

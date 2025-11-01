@@ -32,6 +32,11 @@ export default function ChatPage({ participantId, condition, onComplete }: ChatP
 	const [isComplete, setIsComplete] = useState(false);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const fetchedRoundsRef = useRef<Set<number>>(new Set());
+	const chatHistoryRef = useRef<ChatMessage[]>([]);
+	const botGreetingsRef = useRef<BotMessage[]>([]);
+	const greetingFetchedForRound = useRef<Set<number>>(new Set());
+	const isMountedRef = useRef(true);
+	const isFetchingGreetingRef = useRef(false);
 
 	const scrollToBottom = () => {
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -41,62 +46,84 @@ export default function ChatPage({ participantId, condition, onComplete }: ChatP
 		scrollToBottom();
 	}, [chatHistory, botGreetings]);
 
-	// Fetch initial greeting when round changes or component mounts
+	// Fetch greeting ONLY once - on round 1, before any messages are sent
 	useEffect(() => {
-		if (currentRound > 3 || isComplete) {
+		if (currentRound !== 1 || isComplete) {
 			setIsFetchingGreeting(false);
 			return;
 		}
 
-		// Check if we already have greeting for this round
-		const hasGreeting = botGreetings.some((g) => g.round === currentRound);
+		// Check if we've already fetched greeting (only fetch once in entire lifecycle)
+		if (greetingFetchedForRound.current.has(1)) {
+			setIsFetchingGreeting(false);
+			return;
+		}
+
+		// Check if we're already fetching (prevent duplicate calls)
+		if (isFetchingGreetingRef.current) {
+			return;
+		}
+
+		// Check if we already have greeting for round 1
+		const hasGreeting = botGreetingsRef.current.some((g) => g.round === 1);
 		if (hasGreeting) {
+			greetingFetchedForRound.current.add(1);
 			setIsFetchingGreeting(false);
 			return;
 		}
 
-		let isMounted = true;
+		// Check if user has already sent messages - if so, don't fetch greeting
+		const hasMessages = chatHistoryRef.current.length > 0;
+		if (hasMessages) {
+			setIsFetchingGreeting(false);
+			return;
+		}
 
 		const fetchGreeting = async () => {
+			isFetchingGreetingRef.current = true;
 			setIsFetchingGreeting(true);
 
 			try {
 				const response = await api.getGreeting({
 					participant_id: participantId,
-					round: currentRound,
+					round: 1,
 				});
 
-				if (!isMounted) return;
+				if (!isMountedRef.current) {
+					return;
+				}
 
 				const greeting: BotMessage = {
-					round: currentRound,
+					round: 1,
 					reply: response.reply,
 					ts: new Date().toISOString(),
 				};
 
 				setBotGreetings((prev) => {
 					const exists = prev.some((g) => g.round === greeting.round);
-					if (exists) return prev;
-					return [...prev, greeting];
+					if (exists) {
+						return prev;
+					}
+					const updated = [...prev, greeting];
+					botGreetingsRef.current = updated;
+					greetingFetchedForRound.current.add(1);
+					return updated;
 				});
 			} catch (error) {
 				console.error("Error fetching greeting:", error);
-				if (isMounted) {
+				if (isMountedRef.current) {
 					alert(error instanceof Error ? error.message : "An error occurred. Please try again.");
 				}
 			} finally {
-				if (isMounted) {
+				isFetchingGreetingRef.current = false;
+				if (isMountedRef.current) {
 					setIsFetchingGreeting(false);
 				}
 			}
 		};
 
 		fetchGreeting();
-
-		return () => {
-			isMounted = false;
-		};
-	}, [currentRound, participantId, isComplete, botGreetings]);
+	}, [currentRound, participantId, isComplete]);
 
 	const handleSendMessage = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -112,7 +139,11 @@ export default function ChatPage({ participantId, condition, onComplete }: ChatP
 			ts: new Date().toISOString(),
 		};
 
-		setChatHistory((prev) => [...prev, optimisticMessage]);
+		setChatHistory((prev) => {
+			const updated = [...prev, optimisticMessage];
+			chatHistoryRef.current = updated;
+			return updated;
+		});
 		setUserMessage("");
 		setIsLoading(true);
 
@@ -124,9 +155,11 @@ export default function ChatPage({ participantId, condition, onComplete }: ChatP
 			});
 
 			// Update the message with the actual reply
-			setChatHistory((prev) =>
-				prev.map((msg, idx) => (idx === prev.length - 1 ? { ...msg, reply: response.reply } : msg))
-			);
+			setChatHistory((prev) => {
+				const updated = prev.map((msg, idx) => (idx === prev.length - 1 ? { ...msg, reply: response.reply } : msg));
+				chatHistoryRef.current = updated;
+				return updated;
+			});
 
 			// Move to next round or complete
 			if (currentRound < 3) {
@@ -138,7 +171,11 @@ export default function ChatPage({ participantId, condition, onComplete }: ChatP
 		} catch (error) {
 			console.error("Error sending message:", error);
 			// Remove the optimistic message on error
-			setChatHistory((prev) => prev.slice(0, -1));
+			setChatHistory((prev) => {
+				const updated = prev.slice(0, -1);
+				chatHistoryRef.current = updated;
+				return updated;
+			});
 			setUserMessage(message); // Restore message in input
 			alert(error instanceof Error ? error.message : "An error occurred. Please try again.");
 		} finally {
@@ -162,40 +199,46 @@ export default function ChatPage({ participantId, condition, onComplete }: ChatP
 
 			{/* Chat Messages */}
 			<div className='bg-gray-50 border border-gray-200 rounded-lg p-4 h-96 overflow-y-auto mb-6'>
-				{isFetchingGreeting && botGreetings.length === 0 ? (
-					<div className='flex items-center justify-center h-full text-gray-500'>
-						<div className='text-center'>
-							<div className='animate-pulse mb-4'>
-								<div className='h-2 w-2 bg-gray-400 rounded-full mx-auto'></div>
+				{chatHistory.length === 0 ? (
+					<>
+						{isFetchingGreeting && botGreetings.length === 0 ? (
+							<div className='flex items-center justify-center h-full text-gray-500'>
+								<div className='text-center'>
+									<div className='animate-pulse mb-4'>
+										<div className='h-2 w-2 bg-gray-400 rounded-full mx-auto'></div>
+									</div>
+									<p>AI is starting the conversation...</p>
+								</div>
 							</div>
-							<p>AI is starting the conversation...</p>
-						</div>
-					</div>
-				) : botGreetings.length === 0 && chatHistory.length === 0 ? (
-					<div className='flex items-center justify-center h-full text-gray-500'>
-						<p>No messages yet...</p>
-					</div>
+						) : botGreetings.length > 0 ? (
+							<div className='space-y-4'>
+								{/* Display round 1 greeting */}
+								<div className='flex justify-start'>
+									<div className='bg-white border border-gray-200 rounded-lg p-3 max-w-xs lg:max-w-md'>
+										<p className='text-sm text-gray-800 whitespace-pre-wrap'>
+											{botGreetings.find((g) => g.round === 1)?.reply || ''}
+										</p>
+									</div>
+								</div>
+							</div>
+						) : (
+							<div className='flex items-center justify-center h-full text-gray-500'>
+								<p>No messages yet...</p>
+							</div>
+						)}
+					</>
 				) : (
 					<div className='space-y-4'>
-						{/* Display messages organized by round with greeting only at round start */}
+						{/* Display messages organized by round */}
 						{Array.from({ length: Math.max(currentRound, 3) }, (_, roundIdx) => {
 							const roundNum = roundIdx + 1;
-							const greeting = botGreetings.find((g) => g.round === roundNum);
 							const roundMessages = chatHistory.filter((m) => m.round === roundNum);
 
-							// Only show round if it has greeting or messages
-							if (!greeting && roundMessages.length === 0) return null;
+							// Only show round if it has messages
+							if (roundMessages.length === 0) return null;
 
 							return (
 								<div key={`round-${roundNum}`} className='space-y-3'>
-									{/* Greeting - only show if no messages yet in this round */}
-									{greeting && roundMessages.length === 0 && (
-										<div className='flex justify-start'>
-											<div className='bg-white border border-gray-200 rounded-lg p-3 max-w-xs lg:max-w-md'>
-												<p className='text-sm text-gray-800 whitespace-pre-wrap'>{greeting.reply}</p>
-											</div>
-										</div>
-									)}
 
 									{/* Chat messages for this round */}
 									{roundMessages.map((message, msgIdx) => (

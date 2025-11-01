@@ -144,14 +144,14 @@ export default function StudyFlow() {
 		setCurrentStep("tai");
 	};
 
-	const handleTaiComplete = async () => {
-		if (!participantId || !attariData || !taiData) return;
+	const handleTaiComplete = async (taiDataParam: TaiData) => {
+		if (!participantId || !attariData) return;
 
 		try {
 			await api.saveScales({
 				participant_id: participantId,
 				attari: attariData,
-				tai: taiData,
+				tai: taiDataParam,
 			});
 			setCurrentStep("screening");
 		} catch (error) {

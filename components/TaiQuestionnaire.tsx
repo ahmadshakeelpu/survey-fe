@@ -6,7 +6,7 @@ import { type TaiData } from "@/lib/api";
 interface TaiQuestionnaireProps {
 	taiData: TaiData | null;
 	setTaiData: (data: TaiData) => void;
-	onComplete: () => void;
+	onComplete: (data: TaiData) => Promise<void>;
 }
 
 const TAI_QUESTIONS = {
@@ -35,6 +35,7 @@ const TAI_QUESTIONS = {
 export default function TaiQuestionnaire({ taiData, setTaiData, onComplete }: TaiQuestionnaireProps) {
 	const [responses, setResponses] = useState<TaiData>(taiData || {});
 	const [selectedQuestions, setSelectedQuestions] = useState<Array<{ id: string; text: string; category: string }>>([]);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	// Randomly select one question from each category
 	useEffect(() => {
@@ -50,10 +51,18 @@ export default function TaiQuestionnaire({ taiData, setTaiData, onComplete }: Ta
 		setSelectedQuestions(selected);
 	}, []);
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		if (isSubmitting) return;
+		
+		setIsSubmitting(true);
 		setTaiData(responses);
-		onComplete();
+		
+		try {
+			await onComplete(responses);
+		} catch (error) {
+			setIsSubmitting(false);
+		}
 	};
 
 	const handleResponseChange = (questionId: string, value: number) => {
@@ -113,11 +122,11 @@ export default function TaiQuestionnaire({ taiData, setTaiData, onComplete }: Ta
 			<div className='pt-6'>
 				<button
 					type='submit'
-					disabled={!isComplete}
+					disabled={!isComplete || isSubmitting}
 					className={`w-full py-3 rounded-lg font-medium transition-colors duration-200 ${
-						isComplete ? "btn-primary" : "bg-gray-300 text-gray-500 cursor-not-allowed"
+						isComplete && !isSubmitting ? "btn-primary" : "bg-gray-300 text-gray-500 cursor-not-allowed"
 					}`}>
-					Continue
+					{isSubmitting ? "Processing..." : "Continue"}
 				</button>
 			</div>
 		</form>
