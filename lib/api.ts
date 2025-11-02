@@ -75,6 +75,11 @@ export const api = {
     return response.data
   },
 
+  saveDemographics: async (payload: { participant_id: string; demographic: DemographicData }) => {
+    const response = await apiClient.post(`${BASE_URL}/demographics`, payload)
+    return response.data
+  },
+
   saveScales: async (payload: { participant_id: string; attari: AttariData; tai: TaiData }) => {
     const response = await apiClient.post(`${BASE_URL}/scales`, payload)
     return response.data
@@ -98,5 +103,41 @@ export const api = {
   complete: async (payload: { participant_id: string; post_use: number; post_change: string }) => {
     const response = await apiClient.post(`${BASE_URL}/complete`, payload)
     return response.data
+  },
+
+  admin: {
+    login: async (password: string) => {
+      const response = await apiClient.post(`${BASE_URL}/admin/login`, { password })
+      return response.data
+    },
+
+    getParticipants: async (token: string) => {
+      const response = await apiClient.get(`${BASE_URL}/admin/participants`, {
+        headers: { 'x-admin-token': token }
+      })
+      return response.data
+    },
+
+    getParticipant: async (id: string, token: string) => {
+      const response = await apiClient.get(`${BASE_URL}/admin/participants/${id}`, {
+        headers: { 'x-admin-token': token }
+      })
+      return response.data
+    },
+
+    getStats: async (token: string) => {
+      const response = await apiClient.get(`${BASE_URL}/admin/stats`, {
+        headers: { 'x-admin-token': token }
+      })
+      return response.data
+    },
+
+    exportData: async (token: string) => {
+      const response = await axios.get(`${BASE_URL}/admin/export`, {
+        headers: { 'x-admin-token': token },
+        responseType: 'blob'
+      })
+      return response.data
+    }
   }
 }

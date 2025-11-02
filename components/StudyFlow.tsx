@@ -116,7 +116,6 @@ export default function StudyFlow() {
 
 	const handleConsent = async () => {
 		try {
-			// Create participant with empty demographics initially (will be filled in later)
 			const result = await api.createParticipant({
 				consent_at: new Date().toISOString(),
 				demographic: {
@@ -136,8 +135,19 @@ export default function StudyFlow() {
 		}
 	};
 
-	const handleDemographicsComplete = () => {
-		setCurrentStep("attari");
+	const handleDemographicsComplete = async () => {
+		if (!participantId || !demographicData) return;
+
+		try {
+			await api.saveDemographics({
+				participant_id: participantId,
+				demographic: demographicData,
+			});
+			setCurrentStep("attari");
+		} catch (error) {
+			console.error("Error saving demographics:", error);
+			alert(error instanceof Error ? error.message : "An error occurred. Please try again.");
+		}
 	};
 
 	const handleAttariComplete = () => {
