@@ -37,6 +37,8 @@ export default function DemographicsPage({ demographicData, setDemographicData, 
 		occupation: demographicData?.occupation || "",
 		recruitment_experience: demographicData?.recruitment_experience || false,
 		recruitment_role: demographicData?.recruitment_role || "",
+		prolific_id: demographicData?.prolific_id || "",
+		no_prolific_id: demographicData?.no_prolific_id || false,
 	});
 	const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -246,6 +248,38 @@ export default function DemographicsPage({ demographicData, setDemographicData, 
 						/>
 					</div>
 				)}
+
+				{/* Prolific ID */}
+				<div>
+					<label className='form-label'>Prolific ID</label>
+					<p className='text-sm text-gray-600 mb-3'>Please provide your unique Prolific ID</p>
+					
+					<input
+						type='text'
+						value={formData.prolific_id}
+						onChange={(e) => handleChange("prolific_id", e.target.value)}
+						disabled={formData.no_prolific_id}
+						className={`form-input ${formData.no_prolific_id ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+						placeholder='Enter your Prolific ID'
+					/>
+
+					<div className='mt-3'>
+						<label className='flex items-center space-x-2 cursor-pointer'>
+							<input
+								type='checkbox'
+								checked={formData.no_prolific_id}
+								onChange={(e) => {
+									handleChange("no_prolific_id", e.target.checked);
+									if (e.target.checked) {
+										handleChange("prolific_id", "");
+									}
+								}}
+								className='w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500'
+							/>
+							<span className='text-gray-700'>I don&apos;t have a Prolific ID</span>
+						</label>
+					</div>
+				</div>
 
 				<div className='pt-6'>
 					<button

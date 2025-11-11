@@ -302,9 +302,22 @@ export default function AdminDashboard() {
 																{formatDemographicValue("nationality", participant.nationality)}
 															</div>
 														)}
+														{participant.prolific_id && (
+															<div className="truncate">
+																<span className="font-medium text-gray-600">Prolific:</span>{" "}
+																{participant.prolific_id}
+															</div>
+														)}
+														{participant.no_prolific_id && (
+															<div className="truncate">
+																<span className="text-gray-500 text-xs">No Prolific ID</span>
+															</div>
+														)}
 														{!participant.age_category &&
 															!participant.gender &&
-															!participant.nationality && (
+															!participant.nationality && 
+															!participant.prolific_id &&
+															!participant.no_prolific_id && (
 																<span className="text-gray-400">No data</span>
 															)}
 													</div>

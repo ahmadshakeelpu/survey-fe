@@ -125,6 +125,8 @@ export default function StudyFlow() {
 					education: "",
 					occupation: "",
 					recruitment_experience: false,
+					prolific_id: "",
+					no_prolific_id: false,
 				},
 			});
 			setParticipantId(result.participant_id);

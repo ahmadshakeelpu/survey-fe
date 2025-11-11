@@ -176,6 +176,20 @@ export default function ParticipantDetailPage({ params }: { params: { id: string
 									<div className="mt-1 text-gray-900">{participant.recruitment_role}</div>
 								</div>
 							)}
+							<div className="border-b pb-2">
+								<span className="font-semibold text-gray-700">Prolific ID:</span>
+								<div className="mt-1 text-gray-900">
+									{participant.no_prolific_id ? (
+										<span className="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-gray-100 text-gray-800">
+											No Prolific ID
+										</span>
+									) : participant.prolific_id ? (
+										<span className="font-mono">{participant.prolific_id}</span>
+									) : (
+										"N/A"
+									)}
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>

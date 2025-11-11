@@ -35,6 +35,8 @@ export interface Participant {
   occupation?: string
   recruitment_experience?: boolean
   recruitment_role?: string
+  prolific_id?: string
+  no_prolific_id?: boolean
   attari?: Record<string, number>
   tai?: Record<string, number>
   screening_text?: string
@@ -59,6 +61,8 @@ export interface DemographicData {
   occupation: string
   recruitment_experience: boolean
   recruitment_role?: string
+  prolific_id?: string
+  no_prolific_id?: boolean
 }
 
 export interface AttariData {
