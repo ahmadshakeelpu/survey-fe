@@ -8,10 +8,10 @@ export const AGE_LABELS: Record<string, string> = {
 };
 
 export const GENDER_LABELS: Record<string, string> = {
-	female: "Female",
 	male: "Male",
-	miscellaneous: "Miscellaneous",
-	"prefer-not-to-say": "Prefer not to say",
+	female: "Female",
+	"non-binary": "Non-binary",
+	"prefer-not-to-tell": "I don't want to tell",
 };
 
 export const EDUCATION_LABELS: Record<string, string> = {

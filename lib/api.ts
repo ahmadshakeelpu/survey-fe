@@ -37,6 +37,9 @@ export interface Participant {
   recruitment_role?: string
   prolific_id?: string
   no_prolific_id?: boolean
+  leading_position?: boolean
+  job_search_ai_use_before?: number
+  job_search_ai_use_after?: number
   attari?: Record<string, number>
   tai?: Record<string, number>
   screening_text?: string
@@ -63,6 +66,7 @@ export interface DemographicData {
   recruitment_role?: string
   prolific_id?: string
   no_prolific_id?: boolean
+  leading_position?: boolean
 }
 
 export interface AttariData {
@@ -89,7 +93,7 @@ export const api = {
     return response.data
   },
 
-  screening: async (payload: { participant_id: string; screening_text: string; baseline_use: number }) => {
+  screening: async (payload: { participant_id: string; screening_text: string; baseline_use: number; job_search_ai_use_before?: number }) => {
     const response = await apiClient.post(`${BASE_URL}/screening`, payload)
     return response.data
   },
@@ -104,7 +108,7 @@ export const api = {
     return response.data
   },
 
-  complete: async (payload: { participant_id: string; post_use: number; post_change: string }) => {
+  complete: async (payload: { participant_id: string; post_use: number; post_change: string; job_search_ai_use_after?: number }) => {
     const response = await apiClient.post(`${BASE_URL}/complete`, payload)
     return response.data
   },

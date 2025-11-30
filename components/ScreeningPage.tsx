@@ -7,6 +7,8 @@ interface ScreeningPageProps {
   setScreeningText: (text: string) => void
   baselineUse: number
   setBaselineUse: (value: number) => void
+  jobSearchAiUseBefore: number
+  setJobSearchAiUseBefore: (value: number) => void
   onComplete: () => void
 }
 
@@ -14,7 +16,9 @@ export default function ScreeningPage({
   screeningText, 
   setScreeningText, 
   baselineUse, 
-  setBaselineUse, 
+  setBaselineUse,
+  jobSearchAiUseBefore,
+  setJobSearchAiUseBefore,
   onComplete 
 }: ScreeningPageProps) {
   const [isValid, setIsValid] = useState(false)
@@ -95,6 +99,41 @@ export default function ScreeningPage({
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
               style={{
                 background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${baselineUse}%, #e5e7eb ${baselineUse}%, #e5e7eb 100%)`
+              }}
+            />
+            
+            <div className="flex justify-between text-xs text-gray-500 mt-2">
+              <span>Not likely at all</span>
+              <span>Very likely</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Job Search AI Use Before */}
+        <div>
+          <label className="form-label">
+            Job Search Assessment
+          </label>
+          <p className="text-sm text-gray-600 mb-4">
+            How likely are you to use AI for your own job search?
+          </p>
+          
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-sm font-medium text-gray-700">0%</span>
+              <span className="text-lg font-bold text-primary-600">{jobSearchAiUseBefore}%</span>
+              <span className="text-sm font-medium text-gray-700">100%</span>
+            </div>
+            
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={jobSearchAiUseBefore}
+              onChange={(e) => setJobSearchAiUseBefore(parseInt(e.target.value))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+              style={{
+                background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${jobSearchAiUseBefore}%, #e5e7eb ${jobSearchAiUseBefore}%, #e5e7eb 100%)`
               }}
             />
             

@@ -39,6 +39,7 @@ export default function DemographicsPage({ demographicData, setDemographicData, 
 		recruitment_role: demographicData?.recruitment_role || "",
 		prolific_id: demographicData?.prolific_id || "",
 		no_prolific_id: demographicData?.no_prolific_id || false,
+		leading_position: demographicData?.leading_position || false,
 	});
 	const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -114,10 +115,10 @@ export default function DemographicsPage({ demographicData, setDemographicData, 
 					<label className='form-label'>Gender <span className='text-red-500'>*</span></label>
 					<div className='space-y-2'>
 						{[
-							{ value: "female", label: "Female" },
 							{ value: "male", label: "Male" },
-							{ value: "miscellaneous", label: "Miscellaneous" },
-							{ value: "prefer-not-to-say", label: "I don't want to show off" },
+							{ value: "female", label: "Female" },
+							{ value: "non-binary", label: "Non-binary" },
+							{ value: "prefer-not-to-tell", label: "I don't want to tell" },
 						].map((option) => (
 							<label key={option.value} className='flex items-center space-x-2 cursor-pointer'>
 								<input
@@ -202,11 +203,24 @@ export default function DemographicsPage({ demographicData, setDemographicData, 
 					{errors.occupation && <p className='mt-1 text-sm text-red-600'>{errors.occupation}</p>}
 				</div>
 
+				{/* Leading Position */}
+				<div>
+					<label className='flex items-center space-x-2 cursor-pointer'>
+						<input
+							type='checkbox'
+							checked={formData.leading_position || false}
+							onChange={(e) => handleChange("leading_position", e.target.checked)}
+							className='w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500'
+						/>
+						<span className='text-gray-700 font-medium'>I work in a leading position</span>
+					</label>
+				</div>
+
 				{/* Recruitment Experience */}
 				<div>
 					<label className='form-label'>Recruitment Experience</label>
 					<p className='text-sm text-gray-600 mb-3'>
-						Do you already have experience in personnel selection or recruiting?
+						Do you have experience as an HR-responsible?
 					</p>
 					<div className='space-y-2'>
 						<label className='flex items-center space-x-2 cursor-pointer'>

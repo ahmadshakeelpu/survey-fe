@@ -22,8 +22,10 @@ interface SavedProgress {
 	taiData: TaiData | null;
 	screeningText: string;
 	baselineUse: number;
+	jobSearchAiUseBefore: number;
 	condition: "control" | "experimental" | null;
 	postUse: number;
+	jobSearchAiUseAfter: number;
 	postChange: string;
 }
 
@@ -46,8 +48,10 @@ export default function StudyFlow() {
 	const [taiData, setTaiData] = useState<TaiData | null>(null);
 	const [screeningText, setScreeningText] = useState("");
 	const [baselineUse, setBaselineUse] = useState(50);
+	const [jobSearchAiUseBefore, setJobSearchAiUseBefore] = useState(50);
 	const [condition, setCondition] = useState<"control" | "experimental" | null>(null);
 	const [postUse, setPostUse] = useState(50);
+	const [jobSearchAiUseAfter, setJobSearchAiUseAfter] = useState(50);
 	const [postChange, setPostChange] = useState("");
 	const [isInitialized, setIsInitialized] = useState(false);
 
@@ -65,8 +69,10 @@ export default function StudyFlow() {
 					setTaiData(progress.taiData);
 					setScreeningText(progress.screeningText);
 					setBaselineUse(progress.baselineUse);
+					setJobSearchAiUseBefore(progress.jobSearchAiUseBefore || 50);
 					setCondition(progress.condition);
 					setPostUse(progress.postUse);
+					setJobSearchAiUseAfter(progress.jobSearchAiUseAfter || 50);
 					setPostChange(progress.postChange);
 				} catch (error) {
 					console.error("Failed to load saved progress:", error);
@@ -88,8 +94,10 @@ export default function StudyFlow() {
 			taiData,
 			screeningText,
 			baselineUse,
+			jobSearchAiUseBefore,
 			condition,
 			postUse,
+			jobSearchAiUseAfter,
 			postChange,
 		};
 
@@ -101,18 +109,20 @@ export default function StudyFlow() {
 			localStorage.removeItem(STORAGE_KEY);
 		}
 	}, [
-		currentStep,
-		participantId,
-		demographicData,
-		attariData,
-		taiData,
-		screeningText,
-		baselineUse,
-		condition,
-		postUse,
-		postChange,
-		isInitialized,
-	]);
+			currentStep,
+			participantId,
+			demographicData,
+			attariData,
+			taiData,
+			screeningText,
+			baselineUse,
+			jobSearchAiUseBefore,
+			condition,
+			postUse,
+			jobSearchAiUseAfter,
+			postChange,
+			isInitialized,
+		]);
 
 	const handleConsent = async () => {
 		try {
@@ -127,6 +137,7 @@ export default function StudyFlow() {
 					recruitment_experience: false,
 					prolific_id: "",
 					no_prolific_id: false,
+					leading_position: false,
 				},
 			});
 			setParticipantId(result.participant_id);
@@ -180,6 +191,7 @@ export default function StudyFlow() {
 				participant_id: participantId,
 				screening_text: screeningText,
 				baseline_use: baselineUse,
+				job_search_ai_use_before: jobSearchAiUseBefore,
 			});
 
 			if (result.excluded) {
@@ -211,6 +223,7 @@ export default function StudyFlow() {
 				participant_id: participantId,
 				post_use: postUse,
 				post_change: postChange,
+				job_search_ai_use_after: jobSearchAiUseAfter,
 			});
 			setCurrentStep("thank-you");
 		} catch (error) {
@@ -264,6 +277,8 @@ export default function StudyFlow() {
 					setScreeningText={setScreeningText}
 					baselineUse={baselineUse}
 					setBaselineUse={setBaselineUse}
+					jobSearchAiUseBefore={jobSearchAiUseBefore}
+					setJobSearchAiUseBefore={setJobSearchAiUseBefore}
 					onComplete={handleScreeningComplete}
 				/>
 			)}
@@ -278,6 +293,8 @@ export default function StudyFlow() {
 				<PostTestPage
 					postUse={postUse}
 					setPostUse={setPostUse}
+					jobSearchAiUseAfter={jobSearchAiUseAfter}
+					setJobSearchAiUseAfter={setJobSearchAiUseAfter}
 					postChange={postChange}
 					setPostChange={setPostChange}
 					onComplete={handlePostTestComplete}

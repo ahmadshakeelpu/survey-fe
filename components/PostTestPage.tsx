@@ -5,6 +5,8 @@ import { useState } from 'react'
 interface PostTestPageProps {
   postUse: number
   setPostUse: (value: number) => void
+  jobSearchAiUseAfter: number
+  setJobSearchAiUseAfter: (value: number) => void
   postChange: string
   setPostChange: (value: string) => void
   onComplete: () => void
@@ -12,7 +14,9 @@ interface PostTestPageProps {
 
 export default function PostTestPage({ 
   postUse, 
-  setPostUse, 
+  setPostUse,
+  jobSearchAiUseAfter,
+  setJobSearchAiUseAfter,
   postChange, 
   setPostChange, 
   onComplete 
@@ -65,6 +69,41 @@ export default function PostTestPage({
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
               style={{
                 background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${postUse}%, #e5e7eb ${postUse}%, #e5e7eb 100%)`
+              }}
+            />
+            
+            <div className="flex justify-between text-xs text-gray-500 mt-2">
+              <span>Not likely at all</span>
+              <span>Very likely</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Job Search AI Use After */}
+        <div>
+          <label className="form-label">
+            Job Search Assessment
+          </label>
+          <p className="text-sm text-gray-600 mb-4">
+            How likely are you to use AI for your own job search?
+          </p>
+          
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-sm font-medium text-gray-700">0%</span>
+              <span className="text-lg font-bold text-primary-600">{jobSearchAiUseAfter}%</span>
+              <span className="text-sm font-medium text-gray-700">100%</span>
+            </div>
+            
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={jobSearchAiUseAfter}
+              onChange={(e) => setJobSearchAiUseAfter(parseInt(e.target.value))}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+              style={{
+                background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${jobSearchAiUseAfter}%, #e5e7eb ${jobSearchAiUseAfter}%, #e5e7eb 100%)`
               }}
             />
             
