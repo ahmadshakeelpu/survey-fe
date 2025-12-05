@@ -28,21 +28,21 @@ export default function ThankYouPage() {
         </div>
 
         <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-6">
-          <h3 className="font-semibold text-purple-900 mb-3">Using Prolific</h3>
+          <h3 className="font-semibold text-purple-900 mb-3">Complete Participation</h3>
           <p className="text-purple-800 mb-4">
-            For instructions on how to use Prolific to complete this study, please watch this video:
+            For Prolific participants, please click this link to confirm participation:
           </p>
           <div className="flex justify-center">
             <a
-              href="https://www.loom.com/share/e0639654c817474e9485788e73b759cb"
+              href="https://app.prolific.com/submissions/complete?cc=C18QAPT7"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Watch Prolific Tutorial Video
+              Complete on Prolific
             </a>
           </div>
         </div>
